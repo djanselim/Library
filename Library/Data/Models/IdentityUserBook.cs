@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Library.Data.Models
 {
@@ -10,12 +11,14 @@ namespace Library.Data.Models
 		public string CollectorId { get; set; } = null!;
 
 		[Comment("Collector")]
+		[ForeignKey(nameof(CollectorId))]
 		public IdentityUser IdentityUser { get; set; } = null!;
 
 		[Comment("Book Id")]
 		public int BookId { get; set; }
 
 		[Comment("Book")]
+		[ForeignKey(nameof(BookId))]
 		public Book Book { get; set; } = null!;
 	}
 }

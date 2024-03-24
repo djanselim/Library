@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Library.Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Data
@@ -55,6 +56,15 @@ namespace Library.Data
             */
 
             base.OnModelCreating(builder);
+
+            builder.Entity<IdentityUserBook>()
+				.HasKey(x => new { x.CollectorId, x.BookId });
         }
+
+        public DbSet<Book> Books { get; set; } = null!;
+
+        public DbSet<Category> Categories { get; set; } = null!;
+
+        public DbSet<IdentityUserBook> IdentityUserBooks { get; set; } = null!;
     }
 }
