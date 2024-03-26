@@ -15,12 +15,28 @@ namespace Library.Services
 			this.dbContext = dbContext;
 		}
 
+		public async Task AddBookAsync(AddBookViewModel model)
+		{
+			Book book = new Book
+			{
+				Title = model.Title,
+				Author = model.Author,
+				ImageUrl = model.Url,
+				Description = model.Description,
+				Rating = decimal.Parse(model.Rating),
+				CategoryId = model.CategoryId
+			};
+
+			await dbContext.Books.AddAsync(book);
+			await dbContext.SaveChangesAsync();
+		}
+
 		public async Task AddBookToUserCollectionAsync(string userId, BookViewModel book)
 		{
 			bool alreadyAdded = await dbContext.IdentityUserBooks
 				.AnyAsync(ub => ub.CollectorId == userId && ub.BookId == book.Id);
 
-			if(alreadyAdded == false)
+			if (alreadyAdded == false)
 			{
 				var userBook = new IdentityUserBook
 				{
@@ -76,6 +92,35 @@ namespace Library.Services
 					Description = b.Book.Description,
 					Category = b.Book.Category.Name
 				}).ToListAsync();
+		}
+
+		public async Task<AddBookViewModel> GetNewAddBookModelAsync()
+		{
+			var categories = await dbContext.Categories
+				.Select(c => new CategoryViewModel
+				{
+					Id = c.Id,
+					Name = c.Name
+				}).ToListAsync();
+
+			var model = new AddBookViewModel
+			{
+				Categories = categories
+			};
+
+			return model;
+		}
+
+		public async Task RemoveBookFromUserCollectionAsync(string userId, BookViewModel book)
+		{
+			var userBook = await dbContext.IdentityUserBooks
+					.FirstOrDefaultAsync(ub => ub.CollectorId == userId && ub.BookId == book.Id);
+ 
+			if (userBook != null)
+			{
+				dbContext.IdentityUserBooks.Remove(userBook);
+				await dbContext.SaveChangesAsync();
+			}
 		}
 	}
 }
